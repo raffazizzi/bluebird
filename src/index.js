@@ -200,16 +200,16 @@ function bindPageControls(){
        if ( $(event.target).hasClass('form-control') ) {
            return;
        }
-       if ( event.ctrlKey && (event.keyCode == 37 || event.keyCode == 33 || event.keyCode == 38) ) {
-           renderPage(1);
-       }
-       else if ( event.keyCode == 37 || event.keyCode == 33 || event.keyCode == 38 ) {
+       // if ( event.ctrlKey && (event.keyCode == 37 || event.keyCode == 33 || event.keyCode == 38) ) {
+       //     renderPage(1);
+       // }
+       else if ( event.keyCode == 37 || event.keyCode == 33 || event.keyCode == 38 || event.keyCode == 51 ) {
            prevPage();
        }
-       else if ( event.ctrlKey && (event.keyCode == 39 || event.keyCode == 34 || event.keyCode == 40) ) {
-           renderPage(vrvToolkit.getPageCount());
-       }
-       else if ( event.keyCode == 39  || event.keyCode == 34 || event.keyCode == 40) {
+       // else if ( event.ctrlKey && (event.keyCode == 39 || event.keyCode == 34 || event.keyCode == 40) ) {
+       //     renderPage(vrvToolkit.getPageCount());
+       // }
+       else if ( event.keyCode == 39  || event.keyCode == 34 || event.keyCode == 40 || event.keyCode == 186 ) {
            nextPage();
        }
    });
@@ -364,16 +364,17 @@ function updateInfo(movement, data){
     .attr("title", data.currently.icon.replace(/-/g, " "))
   $("#wind").text(data.currently.windSpeed + "mph")
   $("#temp").text(Math.floor(data.currently.temperature) + " °F")
+  vrvPage = 1
 }
 
 function setOptions() {
   var options = JSON.stringify({
-      pageWidth: $("body").width() * 100 / 36,
-      pageHeight: ($(window).height() - $( "#mainNav" ).height() - 20) * 100 / 40, //$(document).height() * 100 / 40,
+      pageWidth: $("body").width() * 100 / 48,
+      pageHeight: ($(window).height() - $( "#mainNav" ).height() - 20) * 100 / 48, //$(document).height() * 100 / 40,
       ignoreLayout: 1,
       adjustPageHeight: 1,
       border: 50,
-      scale: 35
+      scale: 45
    });
   vrvToolkit.setOptions(options);
 }
