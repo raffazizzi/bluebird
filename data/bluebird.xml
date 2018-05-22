@@ -1067,7 +1067,7 @@
                                 </beam>
                                 <beam xml:id="m-710">
                                     <note xml:id="m-708" dur="8" dur.ges="128p" oct="3" pname="f" pnum="53" stem.dir="up">
-                                        <accid xml:id="m-709" accid="n"/>
+                                        <accid xml:id="m-709" accid="s"/>
                                     </note>
                                     <note xml:id="m-711" dur="8" dur.ges="128p" oct="3" pname="c" pnum="49" stem.dir="up">
                                         <accid xml:id="m-712" accid.ges="s"/>
