@@ -264,10 +264,7 @@ function getSourceName(data){
   }
 
   var t = data.currently.temperature
-  if (t < 42) {
-    source += "Tlt42"
-  }
-  else if (t < 32) {
+  if (t < 32) {
     sources.push("D1")
   }
   else if (t >= 32 && t <= 59) {
