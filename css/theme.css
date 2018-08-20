@@ -2,6 +2,10 @@ svg:not(:root) {
   overflow: inherit;
 }
 
+.hidden {
+  visibility: hidden;
+}
+
 body {
   font-family: Montserrat,"Helvetica Neue",Helvetica,Arial,sans-serif;
 }

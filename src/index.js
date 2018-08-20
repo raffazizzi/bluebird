@@ -426,6 +426,24 @@ function renderPage(page) {
   $("#loading").hide();
   $("#output").html(svg);
   adjustPageAreaControls();
+  // text box hack for pedal on tablet
+  setInterval(function(){
+   getfocus();
+  });
+
+  function getfocus() {
+    var focusbox;
+    focusbox = document.getElementById("htb");
+    {
+      setTimeout(function() {
+        if($('.locin-show').length === 0) {
+          focusbox.focus();
+        }
+      }, 1);
+    }
+  }
+
+
 }
 
 function nextPage() {
