@@ -197,12 +197,15 @@ function redoLayout(){
 function bindPageControls(){
   $(window).keyup(function(event){
        // We need to make sure not to capture event on text fields
+       console.log(event.keyCode)
        if ( $(event.target).hasClass('form-control') ) {
            return;
        }
        // if ( event.ctrlKey && (event.keyCode == 37 || event.keyCode == 33 || event.keyCode == 38) ) {
        //     renderPage(1);
        // }
+
+
        else if ( event.keyCode == 37 || event.keyCode == 33 || event.keyCode == 38 || event.keyCode == 51 ) {
            prevPage();
        }
