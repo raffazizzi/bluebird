@@ -197,7 +197,7 @@ function redoLayout(){
 function bindPageControls(){
   $(window).keyup(function(event){
        // We need to make sure not to capture event on text fields
-       console.log(event.keyCode)
+       console.log(event)
        if ( $(event.target).hasClass('form-control') ) {
            return;
        }
