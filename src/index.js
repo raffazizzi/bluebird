@@ -197,7 +197,6 @@ function redoLayout(){
 function bindPageControls(){
   $(window).keyup(function(event){
        // We need to make sure not to capture event on text fields
-       console.log(event)
        if ( $(event.target).hasClass('form-control') ) {
            return;
        }
@@ -212,7 +211,7 @@ function bindPageControls(){
        // else if ( event.ctrlKey && (event.keyCode == 39 || event.keyCode == 34 || event.keyCode == 40) ) {
        //     renderPage(vrvToolkit.getPageCount());
        // }
-       else if ( event.keyCode == 39  || event.keyCode == 34 || event.keyCode == 40 || event.keyCode == 186 ) {
+       else if ( event.keyCode == 39  || event.keyCode == 34 || event.keyCode == 40 || event.keyCode == 186 || event.keyCode == 0 ) {
            nextPage();
        }
    });
@@ -453,6 +452,11 @@ function nextPage() {
   if (vrvPage+1 <= vrvToolkit.getPageCount()) {
     clearHash();
     vrvPage = vrvPage+1
+    renderPage(vrvPage)
+    if (highlightRdgs) higlightRdgs()
+  } else {
+    vrvPage = 1
+    clearHash()
     renderPage(vrvPage)
     if (highlightRdgs) higlightRdgs()
   }
