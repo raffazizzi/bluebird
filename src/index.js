@@ -21,6 +21,7 @@ var startMeasure = -1;
 var meiData;
 var anacrusis = false;
 var highlightRdgs = false;
+var sourceInfo;
 
 function getMeasureFromHash(hash) {
   startMeasure = parseInt(window.location.hash.substring(2)), 1;
@@ -235,7 +236,7 @@ function getWeatherForPos(position, movement) {
 }
 
 function getTime(data) {
-  console.log(data.currently)
+  // console.log(data.currently)
   var now = data.currently.time
   var sunrise = data.daily.data[0].sunriseTime
   var sunset = data.daily.data[0].sunsetTime
@@ -293,37 +294,6 @@ function getSourceName(data){
   return sources
 }
 
-// function getSourceExtras(data){
-//   var extras = {}
-//   // if (data.currently.windSpeed > 0) {
-//   //   var w = data.currently.windBearing
-//   //   if (315 < w && w <= 360 || 0 <= w && w <= 45) {
-//   //     extras.windBearing = 'Wnorth'
-//   //   } else if (45 < w && w <= 135) {
-//   //     extras.windBearing = 'Weast'
-//   //   } else if (135 < w && w <= 225) {
-//   //     extras.windBearing = 'Wsouth'
-//   //   } else if (225 < w && w <= 315) {
-//   //     extras.windBearing = 'Wwest'
-//   //   }
-//   // }
-//   if (data.currently.cloudCover > 0) {
-//     var c = data.currently.cloudCover
-//     if (0 < c && c <= 0.1) {
-//       extras.cloud = 'C0to10'
-//     } else if (0.1 < c && c <= 0.25) {
-//       extras.cloud = 'C11to25'
-//     } else if (0.25 < c && c <= 0.5) {
-//       extras.cloud = 'C26to50'
-//     } else if (0.5 < c && c <= 0.75) {
-//       extras.cloud = 'C51to75'
-//     } else if (0.75 < c && c <= 1) {
-//       extras.cloud = 'C76to100'
-//     }
-//   }
-//   return extras
-// }
-
 function getWeatherFor(query, movement) {
   movement = movement ? movement : currentMov
   $.get("https://api.mapbox.com/geocoding/v5/mapbox.places/"+query+".json?access_token=pk.eyJ1IjoicmFmZmF6aXp6aSIsImEiOiJNUlY2OG9zIn0.NycTsYGAcmacq2LrIvtU6A", function(geodata){
@@ -338,7 +308,7 @@ function getWeatherFor(query, movement) {
 function updateInfo(movement, data){
   $("#loading").show();
   var source = getSourceName(data);
-  console.log(data.latitude, data.longitude)
+  // console.log(data.latitude, data.longitude)
   // Get location name
   $.get("https://api.mapbox.com/geocoding/v5/mapbox.places/"+data.longitude+","+data.latitude+".json?access_token=pk.eyJ1IjoicmFmZmF6aXp6aSIsImEiOiJNUlY2OG9zIn0.NycTsYGAcmacq2LrIvtU6A", function(geodata){
     var loctext = []
@@ -379,9 +349,10 @@ function setOptions() {
 }
 
 function renderScoreWithSource(movement, source, time){
-  $("#output").empty()
+  sourceInfo = Array.from(source).sort()
 
-  console.log(source)
+  console.log(sourceInfo)
+  $("#output").empty()
 
   var query = './rdg['
   for (var i = 0; i < source.length; i++) {
@@ -408,6 +379,7 @@ function renderScoreWithSource(movement, source, time){
       meiData = $.parseXML((vrvToolkit.getMEI(null, 1)));
       bindPageControls();
       renderPage(1);
+      resetAudio()
 
   }, 'text');
 }
@@ -469,4 +441,220 @@ function prevPage() {
     renderPage(vrvPage)
     if (highlightRdgs) higlightRdgs()
   }
+}
+
+measureTimeStamps = {
+  Alpha: [
+    0,
+  4.157,
+  8.478,
+  12.672,
+  16.614,
+  20.923,
+  25.109,
+  29.876,
+  36.644,
+  41.238,
+  45.424,
+  49.580,
+  53.360,
+  60.902,
+  69.294,
+  ],
+
+  C1: [
+    0,
+    4.603,
+    8.842,
+    13.535
+  ],
+
+  C2: [
+    0,
+    3.349,
+    6.208,
+    8.981,
+    11.584,
+    14.485
+  ],
+
+  C3: [
+    0,
+    4.288,
+    7.712,
+    12.347
+  ],
+
+  D1: [
+    0,
+    5.610,
+    10.669
+  ],
+
+  D2: [
+    0,
+    4.097,
+    7.579
+  ],
+
+  D3: [
+    0,
+    4.092,
+    8.039
+  ],
+
+  D4: [
+    0,
+    3.556,
+    6.725
+  ],
+
+  E1: [
+    0,
+    7.736,
+    12.503
+  ],
+
+  E2: [
+    0,
+    8.448,
+    14.412
+  ],
+
+  E3: [
+    0,
+    6.095,
+    10.853
+  ],
+
+  F1: [
+    0,
+    4.609,
+    9.410,
+    13.312,
+    20.024
+  ],
+
+  F2: [
+    0,
+    4.046,
+    7.166,
+    10.921,
+    14.467,
+    17.145
+  ],
+
+  F3: [
+    0,
+    5.264,
+    9.472,
+    14.015
+  ]
+}
+
+// var currentAudio
+var currentSection = 0
+var playbackPage = 1
+var currentAudio
+document.querySelector('#play').addEventListener("click", function() {
+
+  // console.log(sourceInfo)
+  if (!currentAudio) {
+    console.log(sourceInfo)
+    renderPage(1)
+    playAudio('Alpha')
+    document.querySelector('#playico').style.display = 'none'
+    document.querySelector('#pauseico').style.display = 'inline'
+  } else {
+    if (currentAudio.paused) {
+      currentAudio.play()
+      document.querySelector('#tostart').style.display = 'inline'
+      document.querySelector('#playico').style.display = 'none'
+      document.querySelector('#pauseico').style.display = 'inline'
+    } else {
+      currentAudio.pause()
+      document.querySelector('#playico').style.display = 'inline'
+      document.querySelector('#pauseico').style.display = 'none'
+    }
+  }
+})
+
+document.querySelector('#tostart').addEventListener("click", resetAudio)
+
+function resetAudio() {
+  if (currentAudio) {
+    currentAudio.pause()
+    document.querySelector('#tostart').style.display = 'none'
+    document.querySelector('#playico').style.display = 'inline'
+    document.querySelector('#pauseico').style.display = 'none'
+    renderPage(1)
+    playAudio('Alpha', false)
+  }
+}
+
+function playAudio(section, start) {
+  if (start === undefined || start === null) {
+    startImmediately = true
+  } else {
+    startImmediately = start
+  }
+  console.log(section)
+  var curMeasure = 0
+  var colored = false
+  currentAudio = new Audio('data/recordings/'+section+'.mp3')
+  measures = Array.from(document.querySelectorAll('.measure')).filter(function(m) {
+    m.style.fill = 'black'
+    return m.getAttribute('id').match(/^([^-]+)-/)[1] === section.toLowerCase()
+  })
+  
+  // If there are no measures, we may need to change page
+  if (measures.length === 0) {
+    playbackPage++
+    renderPage(playbackPage)
+    measures = measures.concat(Array.from(document.querySelectorAll('.measure')).filter(function(m) {
+      return m.getAttribute('id').match(/^([^-]+)-/)[1] === section.toLowerCase()
+    }))
+  }
+
+  if (startImmediately) {
+    currentAudio.play()
+  }  
+  document.querySelector('#tostart').style.display = 'inline'
+
+  currentAudio.ontimeupdate = function(t) {
+    ts = currentAudio.currentTime
+    if (ts > measureTimeStamps[section][curMeasure] && (ts < measureTimeStamps[section][curMeasure+1] || !measureTimeStamps[section][curMeasure+1])) {
+      if (!colored) {
+        measures[curMeasure].style.fill = 'blue'
+        for (i = 0; i < curMeasure; i++) {
+          measures[i].style.fill = 'black'
+        }
+        colored = true
+      }
+    } else if (ts > measureTimeStamps[section][curMeasure+1]) {
+      curMeasure++
+      colored = false
+      // Check if we need to turn page.
+      if (curMeasure == measures.length) {
+        playbackPage++
+        renderPage(playbackPage)
+        measures = measures.concat(Array.from(document.querySelectorAll('.measure')).filter(function(m) {
+          return m.getAttribute('id').match(/^([^-]+)-/)[1] === section.toLowerCase()
+        }))
+      }
+    }
+  }
+
+  currentAudio.addEventListener("ended", function(){    
+    if (currentSection+1 > sourceInfo.length) {
+      measures[measures.length-1].style.fill = 'black'
+      document.querySelector('#playico').style.display = 'inline'
+      document.querySelector('#pauseico').style.display = 'none'
+      resetAudio()
+    } else {
+      nextSection = sourceInfo[currentSection]
+      currentSection++
+      playAudio(nextSection)
+    }    
+  })
 }
