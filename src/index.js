@@ -69,10 +69,6 @@ $("#showOverCastRainyNight").click(function(e){
   getWeatherFor(navigator.geolocation.getCurrentPosition(function(p){getWeatherForPos(p,'wet')}));
 })
 
-$("#prevArea").click(prevPage);
-
-$("#nextArea").click(nextPage);
-
 $("#set-cancel").click(function(e){
   $("#settings-cnt").collapse("toggle")
   // return to location based score
@@ -216,6 +212,16 @@ function bindPageControls(){
            nextPage();
        }
    });
+
+  $("#prevArea").click(prevPage);
+
+  $("#nextArea").click(nextPage);
+}
+
+function unbindPageControls(){
+  $(window).unbind('keyup')
+  $("#prevArea").unbind('click')
+  $("#nextArea").unbind('click')
 }
 
 function getWeatherForPos(position, movement) {
@@ -568,11 +574,13 @@ document.querySelector('#play').addEventListener("click", function() {
   } else {
     if (currentAudio.paused) {
       currentAudio.play()
+      unbindPageControls()
       document.querySelector('#tostart').style.display = 'inline'
       document.querySelector('#playico').style.display = 'none'
       document.querySelector('#pauseico').style.display = 'inline'
     } else {
       currentAudio.pause()
+      unbindPageControls()
       document.querySelector('#playico').style.display = 'inline'
       document.querySelector('#pauseico').style.display = 'none'
     }
@@ -588,7 +596,8 @@ function resetAudio() {
     document.querySelector('#playico').style.display = 'inline'
     document.querySelector('#pauseico').style.display = 'none'
     renderPage(1)
-    playAudio('Alpha', false)
+    currentAudio = null
+    bindPageControls()
   }
 }
 
@@ -618,6 +627,7 @@ function playAudio(section, start) {
 
   if (startImmediately) {
     currentAudio.play()
+    unbindPageControls()
   }  
   document.querySelector('#tostart').style.display = 'inline'
 
@@ -651,6 +661,7 @@ function playAudio(section, start) {
       document.querySelector('#playico').style.display = 'inline'
       document.querySelector('#pauseico').style.display = 'none'
       resetAudio()
+      bindPageControls()
     } else {
       nextSection = sourceInfo[currentSection]
       currentSection++
