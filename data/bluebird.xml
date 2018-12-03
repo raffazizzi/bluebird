@@ -688,7 +688,7 @@
                                 <beam xml:id="alpha-m-462">
                                     <note xml:id="alpha-m-461" dur="16" dur.ges="64p" oct="5" pname="e" pnum="76" stem.dir="down">
                                         <verse xml:id="alpha-m-478" n="1">
-                                            <syl xml:id="alpha-m-479" con="d" wordpos="i">Nat</syl>
+                                            <syl xml:id="alpha-m-479" con="d" wordpos="i">Na</syl>
                                         </verse>
                                     </note>
                                     <note xml:id="alpha-m-463" dur="16" dur.ges="64p" oct="5" pname="c" pnum="73" stem.dir="down">
@@ -5527,7 +5527,7 @@
                                     <layer xml:id="f2-m-411" n="1">
                                         <space xml:id="f2-m-412" dur="4" dur.ges="256p"/>
                                         <clef xml:id="f2-m-413" line="4" shape="F" staff="3" tstamp="2"/>
-                                        <note xml:id="f2-m-414" artic="stacc" dur="4" dur.ges="256p" oct="1" pname="e" pnum="28" stem.dir="up"/>
+                                        <!--<note xml:id="f2-m-414" artic="stacc" dur="4" dur.ges="256p" oct="1" pname="e" pnum="28" stem.dir="up"/>-->
                                     </layer>
                                 </staff>
                             </measure>

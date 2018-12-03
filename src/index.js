@@ -136,7 +136,7 @@ $("#locinput .btn").click(function(e){
 function clearHash() {
   // clear hash
   // (eventually you could determine the first measure and updated it accordingly)
-  window.location.hash = "";
+  // window.location.hash = "";
 }
 
 function higlightRdgs() {
@@ -192,7 +192,7 @@ function redoLayout(){
 }
 
 function bindPageControls(){
-  $(window).keyup(function(event){
+  $(window).unbind('keyup').bind('keyup', function(event){
        // We need to make sure not to capture event on text fields
        if ( $(event.target).hasClass('form-control') ) {
            return;
@@ -213,9 +213,9 @@ function bindPageControls(){
        }
    });
 
-  $("#prevArea").click(prevPage);
+  $("#prevArea").unbind('click').bind('click', prevPage);
 
-  $("#nextArea").click(nextPage);
+  $("#nextArea").unbind('click').bind('click', nextPage);
 }
 
 function unbindPageControls(){
@@ -604,9 +604,6 @@ document.querySelector('#play').addEventListener("click", function() {
 document.querySelector('#tostart').addEventListener("click", resetAudio)
 
 function resetAudio() {
-  if (audioFiles[currentAudioIdx]) {
-    audioFiles[currentAudioIdx].pause()
-  }
   document.querySelector('#tostart').style.display = 'none'
   document.querySelector('#playico').style.display = 'inline'
   document.querySelector('#pauseico').style.display = 'none'
@@ -618,6 +615,7 @@ function resetAudio() {
       audioFiles[i].pause()
     }
   }
+  setAudioFiles()
   bindPageControls()
   currentSection = 0
   playbackPage = 1
@@ -641,14 +639,13 @@ function playAudio(section) {
     }))
   }
 
-  console.log(currentAudioIdx)
   var currentAudio = audioFiles[currentAudioIdx]
   currentAudio.play()
   unbindPageControls()
    
   document.querySelector('#tostart').style.display = 'inline'
 
-  currentAudio.ontimeupdate = function(t) {
+  currentAudio.addEventListener('timeupdate', function(t) {
     ts = currentAudio.currentTime
     if (ts > measureTimeStamps[section][curMeasure] && (ts < measureTimeStamps[section][curMeasure+1] || !measureTimeStamps[section][curMeasure+1])) {
       if (!colored) {
@@ -670,9 +667,9 @@ function playAudio(section) {
         }))
       }
     }
-  }
+  })
 
-  currentAudio.addEventListener("ended", function(){    
+  currentAudio.addEventListener("ended", function(){
     if (currentSection+1 > sourceInfo.length) {
       measures[measures.length-1].style.fill = 'black'
       document.querySelector('#playico').style.display = 'inline'
@@ -682,7 +679,8 @@ function playAudio(section) {
     } else {
       nextSection = sourceInfo[currentSection]
       currentSection++  
-      currentAudioIdx++    
+      currentAudioIdx++
+      currentAudio.currentTime = 0
       playAudio(nextSection)
     }    
   })
