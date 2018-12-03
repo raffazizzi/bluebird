@@ -1,3 +1,4 @@
+console.log('v0.1')
 
 var weatherIconsMap = {
   "clear-day" : "wi-day-sunny",
