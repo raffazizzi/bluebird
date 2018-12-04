@@ -1,4 +1,4 @@
-console.log('v0.2')
+console.log('v0.3')
 
 var weatherIconsMap = {
   "clear-day" : "wi-day-sunny",
@@ -615,6 +615,7 @@ function resetAudio() {
 }
 
 function simpleStop() {
+  document.querySelector("#play").style.display = 'inline-block'
   document.querySelector('#tostart').style.display = 'none'
   document.querySelector('#playico').style.display = 'inline'
   document.querySelector('#pauseico').style.display = 'none'
@@ -633,6 +634,7 @@ function simpleStop() {
 
 function playAudio(section) {
   console.log(section)
+  
   var curMeasure = 0
   var colored = false
   measures = Array.from(document.querySelectorAll('.measure')).filter(function(m) {
