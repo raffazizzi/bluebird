@@ -1,4 +1,4 @@
-console.log('v0.1')
+console.log('v0.2')
 
 var weatherIconsMap = {
   "clear-day" : "wi-day-sunny",
@@ -357,6 +357,7 @@ function setOptions() {
 
 function renderScoreWithSource(movement, source, time){
   sourceInfo = Array.from(source).sort()
+  simpleStop()
   setAudioFiles()  
 
   console.log(sourceInfo)
@@ -385,10 +386,8 @@ function renderScoreWithSource(movement, source, time){
   $.get( "data/bluebird.xml", function( data ) {
       vrvToolkit.loadData( data + "\n", "");
       meiData = $.parseXML((vrvToolkit.getMEI(null, 1)));
-      bindPageControls();
-      renderPage(1);
-      resetAudio()
-
+      bindPageControls()
+      renderPage(1)
   }, 'text');
 }
 
@@ -568,6 +567,7 @@ var currentAudioIdx
 audioFiles = []
 
 function setAudioFiles() {
+  delete audioFiles
   audioFiles = [new Audio('data/recordings/Alpha.mp3')]
   for (i = 0; i < sourceInfo.length; i++) {
     audioFiles.push(new Audio('data/recordings/'+sourceInfo[i]+'.mp3'))
@@ -590,7 +590,7 @@ document.querySelector('#play').addEventListener("click", function() {
     if (audioFiles[currentAudioIdx].paused) {
       audioFiles[currentAudioIdx].play()
       unbindPageControls()
-      document.querySelector('#tostart').style.display = 'inline'
+      document.querySelector('#tostart').style.display = 'inline-block'
       document.querySelector('#playico').style.display = 'none'
       document.querySelector('#pauseico').style.display = 'inline'
     } else {
@@ -605,21 +605,30 @@ document.querySelector('#play').addEventListener("click", function() {
 document.querySelector('#tostart').addEventListener("click", resetAudio)
 
 function resetAudio() {
-  document.querySelector('#tostart').style.display = 'none'
-  document.querySelector('#playico').style.display = 'inline'
-  document.querySelector('#pauseico').style.display = 'none'
+  document.querySelector("#play").style.display = 'inline-block'
+  simpleStop()
   renderPage(1)
-  currentAudioIdx = null
-  for (i=0; i<audioFiles.length; i++) {
-    if (audioFiles[i]) {
-      audioFiles[i].currentTime = 0
-      audioFiles[i].pause()
-    }
-  }
   setAudioFiles()
   bindPageControls()
   currentSection = 0
   playbackPage = 1
+}
+
+function simpleStop() {
+  document.querySelector('#tostart').style.display = 'none'
+  document.querySelector('#playico').style.display = 'inline'
+  document.querySelector('#pauseico').style.display = 'none'
+  currentAudioIdx = null
+  if (audioFiles) {
+    for (i=0; i<audioFiles.length; i++) {
+      audioFiles[i].currentTime = 0
+      audioFiles[i].pause()
+    }
+  }
+  if (currentSection) {
+    currentSection = 0
+    playbackPage = 1
+  }
 }
 
 function playAudio(section) {
@@ -640,14 +649,13 @@ function playAudio(section) {
     }))
   }
 
-  var currentAudio = audioFiles[currentAudioIdx]
-  currentAudio.play()
+  audioFiles[currentAudioIdx].play()
   unbindPageControls()
    
-  document.querySelector('#tostart').style.display = 'inline'
+  document.querySelector('#tostart').style.display = 'inline-block'
 
-  currentAudio.addEventListener('timeupdate', function(t) {
-    ts = currentAudio.currentTime
+  audioFiles[currentAudioIdx].ontimeupdate = function(t) {
+    ts = audioFiles[currentAudioIdx].currentTime
     if (ts > measureTimeStamps[section][curMeasure] && (ts < measureTimeStamps[section][curMeasure+1] || !measureTimeStamps[section][curMeasure+1])) {
       if (!colored) {
         measures[curMeasure].style.fill = 'blue'
@@ -668,20 +676,20 @@ function playAudio(section) {
         }))
       }
     }
-  })
+  }
 
-  currentAudio.addEventListener("ended", function(){
+  audioFiles[currentAudioIdx].addEventListener("ended", function(){    
     if (currentSection+1 > sourceInfo.length) {
       measures[measures.length-1].style.fill = 'black'
-      document.querySelector('#playico').style.display = 'inline'
+      document.querySelector('#playico').style.display = 'inline-block'
       document.querySelector('#pauseico').style.display = 'none'
-      resetAudio()
+      document.querySelector("#play").style.display = 'none'
+      vrvToolkit.getPageCount()
       bindPageControls()
     } else {
       nextSection = sourceInfo[currentSection]
       currentSection++  
       currentAudioIdx++
-      currentAudio.currentTime = 0
       playAudio(nextSection)
     }    
   })
