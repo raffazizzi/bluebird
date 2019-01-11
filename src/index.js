@@ -1,4 +1,4 @@
-console.log('v0.3')
+console.log('v0.4')
 
 var weatherIconsMap = {
   "clear-day" : "wi-day-sunny",
@@ -23,6 +23,8 @@ var meiData;
 var anacrusis = false;
 var highlightRdgs = false;
 var sourceInfo;
+
+var mainAudio = new Audio()
 
 function getMeasureFromHash(hash) {
   startMeasure = parseInt(window.location.hash.substring(2)), 1;
@@ -567,14 +569,13 @@ var currentAudioIdx
 audioFiles = []
 
 function setAudioFiles() {
-  delete audioFiles
-  audioFiles = [new Audio('data/recordings/Alpha.mp3')]
+  audioFiles = ['data/recordings/Alpha.mp3']
   for (i = 0; i < sourceInfo.length; i++) {
-    audioFiles.push(new Audio('data/recordings/'+sourceInfo[i]+'.mp3'))
+    audioFiles.push('data/recordings/'+sourceInfo[i]+'.mp3')
   }
-  for (j = 0; j < audioFiles.length; j++) {
-    audioFiles[j].load()
-  }
+  // for (j = 0; j < audioFiles.length; j++) {
+  //   audioFiles[j].load()
+  // }
 }
 
 document.querySelector('#play').addEventListener("click", function() {
@@ -587,14 +588,15 @@ document.querySelector('#play').addEventListener("click", function() {
     document.querySelector('#playico').style.display = 'none'
     document.querySelector('#pauseico').style.display = 'inline'
   } else {
-    if (audioFiles[currentAudioIdx].paused) {
-      audioFiles[currentAudioIdx].play()
+    if (mainAudio.paused) {
+      mainAudio.play()
       unbindPageControls()
       document.querySelector('#tostart').style.display = 'inline-block'
       document.querySelector('#playico').style.display = 'none'
       document.querySelector('#pauseico').style.display = 'inline'
     } else {
-      audioFiles[currentAudioIdx].pause()
+      mainAudio.currentTime = 0
+      mainAudio.pause()
       unbindPageControls()
       document.querySelector('#playico').style.display = 'inline'
       document.querySelector('#pauseico').style.display = 'none'
@@ -620,12 +622,15 @@ function simpleStop() {
   document.querySelector('#playico').style.display = 'inline'
   document.querySelector('#pauseico').style.display = 'none'
   currentAudioIdx = null
-  if (audioFiles) {
-    for (i=0; i<audioFiles.length; i++) {
-      audioFiles[i].currentTime = 0
-      audioFiles[i].pause()
-    }
-  }
+  mainAudio.pause()
+  delete mainAudio
+  mainAudio = new Audio()
+  // if (audioFiles) {
+  //   // for (i=0; i<audioFiles.length; i++) {
+  //     mainAudio.currentTime = 0
+  //     mainAudio.pause()
+  //   // }
+  // }
   if (currentSection) {
     currentSection = 0
     playbackPage = 1
@@ -633,7 +638,7 @@ function simpleStop() {
 }
 
 function playAudio(section) {
-  console.log(section)
+  console.log('playing ', section)
   
   var curMeasure = 0
   var colored = false
@@ -651,13 +656,14 @@ function playAudio(section) {
     }))
   }
 
-  audioFiles[currentAudioIdx].play()
+  mainAudio.src = audioFiles[currentAudioIdx]
+  mainAudio.play()
   unbindPageControls()
    
   document.querySelector('#tostart').style.display = 'inline-block'
 
-  audioFiles[currentAudioIdx].ontimeupdate = function(t) {
-    ts = audioFiles[currentAudioIdx].currentTime
+  mainAudio.ontimeupdate = function(t) {
+    ts = mainAudio.currentTime
     if (ts > measureTimeStamps[section][curMeasure] && (ts < measureTimeStamps[section][curMeasure+1] || !measureTimeStamps[section][curMeasure+1])) {
       if (!colored) {
         measures[curMeasure].style.fill = 'blue'
@@ -680,7 +686,8 @@ function playAudio(section) {
     }
   }
 
-  audioFiles[currentAudioIdx].addEventListener("ended", function(){    
+  mainAudio.addEventListener("ended", function(){
+    mainAudio.currentTime = 0    
     if (currentSection+1 > sourceInfo.length) {
       measures[measures.length-1].style.fill = 'black'
       document.querySelector('#playico').style.display = 'inline-block'
