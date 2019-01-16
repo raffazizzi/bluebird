@@ -1,4 +1,4 @@
-console.log('v0.4')
+console.log('v0.5')
 
 var weatherIconsMap = {
   "clear-day" : "wi-day-sunny",
@@ -657,7 +657,10 @@ function playAudio(section) {
   }
 
   mainAudio.src = audioFiles[currentAudioIdx]
-  mainAudio.play()
+  mainAudio.load()
+  mainAudio.oncanplay = () => {
+    mainAudio.play()
+  }
   unbindPageControls()
    
   document.querySelector('#tostart').style.display = 'inline-block'
@@ -687,19 +690,20 @@ function playAudio(section) {
   }
 
   mainAudio.addEventListener("ended", function(){
-    mainAudio.currentTime = 0    
-    if (currentSection+1 > sourceInfo.length) {
-      measures[measures.length-1].style.fill = 'black'
-      document.querySelector('#playico').style.display = 'inline-block'
-      document.querySelector('#pauseico').style.display = 'none'
-      document.querySelector("#play").style.display = 'none'
-      vrvToolkit.getPageCount()
-      bindPageControls()
-    } else {
-      nextSection = sourceInfo[currentSection]
-      currentSection++  
-      currentAudioIdx++
-      playAudio(nextSection)
-    }    
+    if (mainAudio.readyState !== 0) {
+      if (currentSection+1 > sourceInfo.length) {
+        measures[measures.length-1].style.fill = 'black'
+        document.querySelector('#playico').style.display = 'inline-block'
+        document.querySelector('#pauseico').style.display = 'none'
+        document.querySelector("#play").style.display = 'none'
+        vrvToolkit.getPageCount()
+        bindPageControls()
+      } else {
+        nextSection = sourceInfo[currentSection]
+        currentSection++  
+        currentAudioIdx++
+        playAudio(nextSection)
+      }
+    }
   })
 }
